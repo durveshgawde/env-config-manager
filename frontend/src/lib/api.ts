@@ -1,4 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_KEY = process.env.NEXT_PUBLIC_CONFIG_API_KEY || '';
 
 export type Environment = 'dev' | 'staging' | 'prod';
 
@@ -32,10 +33,17 @@ interface ApiResponse<T> {
 }
 
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+
+    // Add API key header if configured
+    if (API_KEY) {
+        headers['X-API-Key'] = API_KEY;
+    }
+
     const res = await fetch(`${API_URL}${endpoint}`, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers,
         ...options,
     });
 

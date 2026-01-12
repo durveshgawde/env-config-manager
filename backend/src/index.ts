@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import configRoutes from './routes/configs';
+import { apiKeyAuth } from './middleware/auth';
 
 // Load environment variables
 dotenv.config();
@@ -23,17 +24,19 @@ app.use((req, res, next) => {
     next();
 });
 
-// Health check endpoint
+// Health check endpoint (no auth required)
 app.get('/health', (req, res) => {
     res.json({
         status: 'healthy',
         timestamp: new Date().toISOString(),
-        version: '1.0.0'
+        version: '1.0.0',
+        authEnabled: !!process.env.CONFIG_API_KEY,
+        encryptionEnabled: !!process.env.ENCRYPTION_KEY
     });
 });
 
-// API Routes
-app.use('/configs', configRoutes);
+// API Routes (protected by API key auth)
+app.use('/configs', apiKeyAuth, configRoutes);
 
 // 404 handler
 app.use((req, res) => {

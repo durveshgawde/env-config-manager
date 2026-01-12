@@ -7,6 +7,11 @@ import {
     CreateConfigRequest,
     PromoteRequest
 } from '../types';
+import {
+    encryptSensitiveValues,
+    decryptSensitiveValues,
+    isEncryptionEnabled
+} from '../lib/encryption';
 
 /**
  * Get or create a config entity by name
@@ -67,13 +72,16 @@ export async function createConfigVersion(
     const latestVersion = await getLatestVersionNumber(config.id, environment);
     const newVersionNumber = latestVersion + 1;
 
+    // Encrypt sensitive values before storing
+    const encryptedData = encryptSensitiveValues(request.data);
+
     const { data, error } = await supabase
         .from('config_versions')
         .insert({
             config_id: config.id,
             environment,
             version_number: newVersionNumber,
-            data: request.data,
+            data: encryptedData,
             message: request.message || `Version ${newVersionNumber}`,
             created_by: request.created_by || 'system'
         })
@@ -81,7 +89,12 @@ export async function createConfigVersion(
         .single();
 
     if (error) throw new Error(`Failed to create version: ${error.message}`);
-    return data;
+
+    // Return with decrypted values
+    return {
+        ...data,
+        data: decryptSensitiveValues(data.data as Record<string, unknown>)
+    };
 }
 
 /**
@@ -107,7 +120,12 @@ export async function listVersions(
         .order('version_number', { ascending: false });
 
     if (error) throw new Error(`Failed to list versions: ${error.message}`);
-    return data || [];
+
+    // Decrypt all versions
+    return (data || []).map(version => ({
+        ...version,
+        data: decryptSensitiveValues(version.data as Record<string, unknown>)
+    }));
 }
 
 /**
@@ -136,6 +154,14 @@ export async function getVersion(
 
     if (error && error.code !== 'PGRST116') {
         throw new Error(`Failed to get version: ${error.message}`);
+    }
+
+    // Decrypt values
+    if (data) {
+        return {
+            ...data,
+            data: decryptSensitiveValues(data.data as Record<string, unknown>)
+        };
     }
 
     return data;

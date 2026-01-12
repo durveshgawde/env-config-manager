@@ -12,7 +12,8 @@ import {
     User,
     FileJson,
     ChevronDown,
-    ChevronUp
+    ChevronUp,
+    Pencil
 } from 'lucide-react';
 import { listVersions, rollback, ConfigVersion, Environment } from '@/lib/api';
 import EnvironmentBadge from '@/components/EnvironmentBadge';
@@ -99,6 +100,13 @@ export default function ConfigVersionsPage() {
                     <span className="font-medium text-white">{versions.length}</span> versions tracked
                 </div>
                 <div className="flex gap-2">
+                    <Link
+                        href={`/configs/${env}/${name}/edit`}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent-cyan/20 text-accent-cyan hover:bg-accent-cyan/30 transition-colors"
+                    >
+                        <Pencil className="w-4 h-4" />
+                        Edit
+                    </Link>
                     {versions.length >= 2 && (
                         <Link
                             href={`/diff?env=${env}&config=${name}&from=${versions[1]?.version_number}&to=${versions[0]?.version_number}`}
@@ -153,8 +161,8 @@ export default function ConfigVersionsPage() {
                             >
                                 <div className="flex items-center gap-4">
                                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${index === 0
-                                            ? 'bg-gradient-to-br from-accent-cyan to-accent-purple'
-                                            : 'bg-dark-700'
+                                        ? 'bg-gradient-to-br from-accent-cyan to-accent-purple'
+                                        : 'bg-dark-700'
                                         }`}>
                                         <span className="font-bold text-lg">v{version.version_number}</span>
                                     </div>
