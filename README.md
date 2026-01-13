@@ -10,8 +10,8 @@ A centralized configuration management system with version control, environment 
 
 | Service | URL |
 |---------|-----|
-| **Dashboard** | [env-config-manager.vercel.app](https://env-config-manager.vercel.app) |
-| **API** | [env-config-manager-api.onrender.com](https://env-config-manager-api.onrender.com) |
+| **Dashboard** | [https://env-config-manager-git-main-durveshs-projects.vercel.app](https://env-config-manager-git-main-durveshs-projects.vercel.app) |
+| **API** | [https://env-config-manager.onrender.com](https://env-config-manager.onrender.com) |
 
 ---
 
