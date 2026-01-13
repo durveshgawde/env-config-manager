@@ -44,6 +44,8 @@ A centralized configuration management system with version control, environment 
 
 ### For Admins (Dashboard)
 
+> 🔐 **To get dashboard access:** Contact the admin. For security, there is no public signup - admin creates user accounts via Supabase.
+
 1. **Login** at the dashboard URL
 2. **Create Config**: Click "+ New Config" → Enter name + key-value pairs
 3. **Edit**: Click on a config → Edit → Changes save as new version
