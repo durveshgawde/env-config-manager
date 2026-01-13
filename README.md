@@ -21,6 +21,21 @@ Instead of managing `.env` files in each project:
 
 ---
 
+## ✨ Key Features
+
+| Feature | Description |
+|---------|-------------|
+| 🔒 **Login Required** | Admin authentication via Supabase |
+| 🔐 **Auto-Encryption** | Keys with SECRET, PASSWORD, TOKEN, KEY are encrypted |
+| 🔑 **API Protection** | All API calls require X-API-Key header |
+| 📝 **Version History** | Every change creates a new version |
+| 🔍 **Visual Diff** | See what changed between versions |
+| ⏪ **Rollback** | Restore any previous version |
+| 🚀 **Environment Promotion** | dev → staging → prod workflow |
+
+
+---
+
 ## 🎯 How to Use
 
 ### Step 1: Create a Configuration
@@ -46,19 +61,6 @@ const config = await fetch('http://your-config-manager/configs/prod/my-app', {
 - **Rollback**: Undo a bad change instantly
 - **Promote**: Push tested config from dev → staging → prod
 
----
-
-## ✨ Key Features
-
-| Feature | Description |
-|---------|-------------|
-| 🔒 **Login Required** | Admin authentication via Supabase |
-| 🔐 **Auto-Encryption** | Keys with SECRET, PASSWORD, TOKEN, KEY are encrypted |
-| 🔑 **API Protection** | All API calls require X-API-Key header |
-| 📝 **Version History** | Every change creates a new version |
-| 🔍 **Visual Diff** | See what changed between versions |
-| ⏪ **Rollback** | Restore any previous version |
-| 🚀 **Environment Promotion** | dev → staging → prod workflow |
 
 ---
 
