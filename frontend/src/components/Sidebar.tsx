@@ -1,14 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
     Home,
     GitCompare,
     ArrowUpRight,
     Settings,
-    Layers
+    Layers,
+    LogOut,
+    User
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 const navItems = [
     { href: '/', label: 'Dashboard', icon: Home },
@@ -18,6 +21,13 @@ const navItems = [
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const router = useRouter();
+    const { user, signOut } = useAuth();
+
+    const handleLogout = async () => {
+        await signOut();
+        router.push('/login');
+    };
 
     return (
         <aside className="fixed left-0 top-0 h-screen w-64 bg-dark-950 border-r border-dark-700 flex flex-col">
@@ -46,8 +56,8 @@ export default function Sidebar() {
                                 <Link
                                     href={item.href}
                                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
-                                            ? 'bg-gradient-to-r from-accent-cyan/20 to-accent-purple/20 text-white border border-accent-cyan/30'
-                                            : 'text-dark-400 hover:text-white hover:bg-dark-800'
+                                        ? 'bg-gradient-to-r from-accent-cyan/20 to-accent-purple/20 text-white border border-accent-cyan/30'
+                                        : 'text-dark-400 hover:text-white hover:bg-dark-800'
                                         }`}
                                 >
                                     <Icon className={`w-5 h-5 ${isActive ? 'text-accent-cyan' : ''}`} />
@@ -59,8 +69,19 @@ export default function Sidebar() {
                 </ul>
             </nav>
 
-            {/* Footer */}
-            <div className="p-4 border-t border-dark-700">
+            {/* User Info & Logout */}
+            <div className="p-4 border-t border-dark-700 space-y-3">
+                {/* User Email */}
+                {user && (
+                    <div className="glass-card p-3">
+                        <div className="flex items-center gap-2 text-dark-300 text-sm">
+                            <User className="w-4 h-4 text-accent-cyan" />
+                            <span className="truncate">{user.email}</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* Environment Status */}
                 <div className="glass-card p-4">
                     <div className="flex items-center gap-2 text-dark-400 text-sm">
                         <Settings className="w-4 h-4" />
@@ -72,7 +93,17 @@ export default function Sidebar() {
                         <span className="px-2 py-1 text-xs rounded-full badge-prod text-white">prod</span>
                     </div>
                 </div>
+
+                {/* Logout Button */}
+                <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-dark-800 hover:bg-accent-rose/20 hover:text-accent-rose text-dark-400 transition-colors"
+                >
+                    <LogOut className="w-4 h-4" />
+                    <span className="font-medium">Logout</span>
+                </button>
             </div>
         </aside>
     );
 }
+
