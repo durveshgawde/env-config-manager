@@ -1,225 +1,132 @@
 # 🔐 Environment Configuration Manager
 
-A production-grade system to safely manage, version, diff, promote, and roll back application configuration across environments. Features secure authentication, automatic encryption of sensitive values, and complete version history.
+A centralized configuration management system with version control, environment promotion, and automatic encryption. Replace scattered `.env` files with a secure, versioned config store.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-20+-green.svg)
-![Docker](https://img.shields.io/badge/docker-ready-blue.svg)
 
-## ✨ Features
+---
+
+## 📖 What It Does
+
+Instead of managing `.env` files in each project:
+
+| Traditional `.env` | This Config Manager |
+|-------------------|---------------------|
+| Files scattered across projects | All configs in one place |
+| No history of changes | Full version history |
+| Manual copy-paste between environments | One-click promote (dev → staging → prod) |
+| Can't undo changes | Instant rollback to any version |
+| Secrets in plain text files | Automatic encryption of sensitive values |
+
+---
+
+## 🎯 How to Use
+
+### Step 1: Create a Configuration
+1. Login to the dashboard
+2. Click **+ New Config**
+3. Enter a name (e.g., `my-app`)
+4. Add your key-value pairs
+5. Save
+
+### Step 2: Your App Reads the Config
+Your app calls the API at startup to get its configuration:
+```javascript
+const config = await fetch('http://your-config-manager/configs/prod/my-app', {
+    headers: { 'X-API-Key': 'your-api-key' }
+}).then(r => r.json());
+
+// Use values from config.data[0].data
+```
+
+### Step 3: Update & Promote
+- **Edit**: Make changes → saves as new version (v1 → v2)
+- **Diff**: Compare any two versions
+- **Rollback**: Undo a bad change instantly
+- **Promote**: Push tested config from dev → staging → prod
+
+---
+
+## ✨ Key Features
 
 | Feature | Description |
 |---------|-------------|
-| **🔒 User Authentication** | Supabase Auth with admin-only access control |
-| **🔐 Automatic Encryption** | AES-256 encryption for sensitive keys (SECRET, KEY, PASSWORD, TOKEN) |
-| **🔑 API Key Protection** | All API routes protected with X-API-Key header |
-| **📝 Immutable Versioning** | Every config change creates a new version (full history) |
-| **🔍 Visual Diff Viewer** | Side-by-side comparison of versions |
-| **⏪ Safe Rollback** | Instantly rollback to any previous version |
-| **🚀 Environment Promotion** | Promote configs: dev → staging → prod |
-| **✏️ Edit Configs** | Edit existing configs (saves as new version) |
+| 🔒 **Login Required** | Admin authentication via Supabase |
+| 🔐 **Auto-Encryption** | Keys with SECRET, PASSWORD, TOKEN, KEY are encrypted |
+| 🔑 **API Protection** | All API calls require X-API-Key header |
+| 📝 **Version History** | Every change creates a new version |
+| 🔍 **Visual Diff** | See what changed between versions |
+| ⏪ **Rollback** | Restore any previous version |
+| 🚀 **Environment Promotion** | dev → staging → prod workflow |
 
-## 📦 Tech Stack
+---
 
-| Layer | Technology |
-|-------|------------|
-| **Frontend** | Next.js 14, Tailwind CSS, TypeScript |
-| **Backend** | Node.js, Express.js, TypeScript |
-| **Database** | Supabase (PostgreSQL + JSONB) |
-| **Auth** | Supabase Authentication |
-| **Encryption** | AES-256-GCM |
+## 🛠️ Setup
 
-## 🛠️ Quick Start
-
-### Prerequisites
-
-- Node.js 20+
-- Supabase account (free tier works)
-
-### 1. Clone & Install
-
+### 1. Install Dependencies
 ```bash
-git clone https://github.com/durveshgawde/env-config-manager.git
-cd env-config-manager
-
-# Backend
 cd backend && npm install
-
-# Frontend
 cd ../frontend && npm install
 ```
 
-### 2. Set Up Supabase
+### 2. Configure Supabase
+1. Create project at [supabase.com](https://supabase.com)
+2. Run `supabase/migrations/001_initial_schema.sql`
+3. Enable Email auth & create a user
 
-1. Create a project at [supabase.com](https://supabase.com)
-2. Run `supabase/migrations/001_initial_schema.sql` in SQL Editor
-3. Enable **Email Auth**: Authentication → Providers → Email
-4. Create a user: Authentication → Users → Add User
-
-### 3. Configure Environment
+### 3. Set Environment Variables
 
 **backend/.env:**
 ```env
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-PORT=3000
-NODE_ENV=development
-
-# Security (Required for production)
-CONFIG_API_KEY=your-secret-api-key
-ENCRYPTION_KEY=your32characterencryptionkey!!
+SUPABASE_URL=your_url
+SUPABASE_ANON_KEY=your_key
+CONFIG_API_KEY=any-secret-string
+ENCRYPTION_KEY=exactly32characters!!!!!!!!!!!
 ```
 
 **frontend/.env.local:**
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-NEXT_PUBLIC_CONFIG_API_KEY=your-secret-api-key
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+NEXT_PUBLIC_CONFIG_API_KEY=same-as-backend-api-key
 ```
 
-### 4. Run Locally
-
+### 4. Run
 ```bash
-# Terminal 1 - Backend
+# Terminal 1
 cd backend && npm run dev
 
-# Terminal 2 - Frontend
+# Terminal 2
 cd frontend && npm run dev
 ```
 
-Open http://localhost:3001 → Login with your Supabase user
+Open **http://localhost:3001** → Login → Start managing configs!
 
-## 🔐 Security Features
+---
 
-### API Key Authentication
+## 📡 API Endpoints
 
-All `/configs` routes require the `X-API-Key` header:
+| Endpoint | What it does |
+|----------|--------------|
+| `GET /configs` | List all configs |
+| `POST /configs/:env/:name` | Create/update config (new version) |
+| `GET /configs/:env/:name` | Get all versions |
+| `POST /configs/:env/:name/rollback` | Rollback to a version |
+| `POST /configs/promote` | Promote between environments |
 
-```bash
-curl -H "X-API-Key: your-secret-api-key" http://localhost:3000/configs
-```
+All endpoints require header: `X-API-Key: your-key`
 
-### Automatic Encryption
+---
 
-Keys containing these patterns are auto-encrypted in the database:
-- `SECRET`, `KEY`, `PASSWORD`, `TOKEN`, `CREDENTIAL`
+## 🔐 Security
 
-```
-Stored in DB:  { "STRIPE_KEY": "ENC:xK9$#mZ..." }  ← Encrypted
-API Response:  { "STRIPE_KEY": "sk_live_abc123" }  ← Decrypted
-```
+- **Dashboard**: Protected by Supabase Auth (admin creates users)
+- **API**: Protected by API key in header
+- **Database**: Sensitive values encrypted with AES-256-GCM
 
-### User Authentication
-
-- Dashboard protected by Supabase Auth
-- Admin creates users via Supabase Dashboard
-- No public signup (secure by default)
-
-## 📡 API Reference
-
-### Base URL
-```
-http://localhost:3000
-```
-
-### Headers Required
-```
-X-API-Key: your-secret-api-key
-Content-Type: application/json
-```
-
-### Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/health` | Health check (no auth) |
-| `GET` | `/configs` | List all configs |
-| `POST` | `/configs/:env/:name` | Create new version |
-| `GET` | `/configs/:env/:name` | List versions |
-| `GET` | `/configs/:env/:name/:version` | Get specific version |
-| `GET` | `/configs/:env/:name/diff?from=X&to=Y` | Diff versions |
-| `POST` | `/configs/:env/:name/rollback` | Rollback |
-| `POST` | `/configs/promote` | Promote between envs |
-
-### Examples
-
-**Create Config:**
-```bash
-curl -X POST http://localhost:3000/configs/dev/my-app \
-  -H "X-API-Key: your-key" \
-  -H "Content-Type: application/json" \
-  -d '{"data": {"API_KEY": "secret123"}, "message": "Initial config"}'
-```
-
-**Promote to Production:**
-```bash
-curl -X POST http://localhost:3000/configs/promote \
-  -H "X-API-Key: your-key" \
-  -H "Content-Type: application/json" \
-  -d '{"configName": "my-app", "fromEnv": "staging", "toEnv": "prod", "version": 5}'
-```
-
-## 🏗️ How Your App Uses This
-
-Your applications fetch configs at startup:
-
-```javascript
-// In your app
-async function loadConfig() {
-    const response = await fetch('https://config-manager.example.com/configs/prod/my-app', {
-        headers: { 'X-API-Key': process.env.CONFIG_API_KEY }
-    });
-    const result = await response.json();
-    return result.data[0].data; // Latest version
-}
-
-const config = await loadConfig();
-console.log(config.API_KEY); // "secret123" (decrypted!)
-```
-
-## 📁 Project Structure
-
-```
-env-config-manager/
-├── backend/
-│   ├── src/
-│   │   ├── index.ts           # Express server
-│   │   ├── routes/configs.ts  # API routes
-│   │   ├── services/          # Business logic
-│   │   ├── middleware/auth.ts # API key auth
-│   │   └── lib/encryption.ts  # AES-256 encryption
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── login/         # Login page
-│   │   │   ├── create/        # Create config
-│   │   │   ├── diff/          # Diff viewer
-│   │   │   └── promote/       # Promotion page
-│   │   ├── components/
-│   │   │   ├── AuthGuard.tsx  # Route protection
-│   │   │   └── Sidebar.tsx    # Navigation + Logout
-│   │   └── context/AuthContext.tsx
-│   └── package.json
-└── supabase/migrations/       # Database schema
-```
-
-## 🚀 Deployment
-
-### Environment Variables for Production
-
-**Backend:**
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `CONFIG_API_KEY`
-- `ENCRYPTION_KEY` (exactly 32 characters)
-
-**Frontend:**
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `NEXT_PUBLIC_CONFIG_API_KEY`
-- `NEXT_PUBLIC_API_URL` (your deployed backend URL)
+---
 
 ## 📄 License
 
-MIT License
+MIT
