@@ -96,26 +96,12 @@ cd ../frontend && npm install
 
 ### 2. Supabase Setup
 1. Create project at [supabase.com](https://supabase.com)
-2. Run `supabase/migrations/001_initial_schema.sql`
+2. Create a `configs` table with columns: `id`, `name`, `environment`, `data` (JSONB), `version`, `created_at`
 3. Enable Email Auth + Create a user
 
 ### 3. Environment Variables
 
-**backend/.env:**
-```env
-SUPABASE_URL=your_url
-SUPABASE_ANON_KEY=your_key
-CONFIG_API_KEY=any-secret-string
-ENCRYPTION_KEY=exactly32characters!!!!!!!!
-```
-
-**frontend/.env.local:**
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
-NEXT_PUBLIC_CONFIG_API_KEY=same-as-backend
-NEXT_PUBLIC_API_URL=http://localhost:3000
-```
+Create `.env` files in `backend/` and `frontend/` directories. See `.env.example` files for required variables.
 
 ### 4. Run Locally
 ```bash
